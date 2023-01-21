@@ -73,7 +73,6 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
         />
         <div className="container px-5 py-24 mx-auto">
           <div className="lg:w-4/5 mx-auto flex flex-wrap">
-            {/* <a className="block relative  rounded overflow-hidden  hover:shadow-slate-400 hover:shadow-md"> */}
             <Image
               alt="ecommerce"
               className="object-cover object-top h-96 md:h-full block "
@@ -81,7 +80,7 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
               width={400}
               height={400}
             />
-            {/* </a> */}
+
             <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
               <h2 className="text-sm title-font text-gray-500 tracking-widest">
                 BRAND NAME
@@ -386,7 +385,7 @@ export async function getServerSideProps(context) {
     await mongoose.connect(process.env.MONGO_URL);
   }
   let product = await Product.findOne({ slug: context.query.slug });
-  let varients = await Product.find({ title: product.title });
+  let varients = await Product.find({ title: product.title,category:product.category });
   let colorSizeSlug = {};
   for (let item of varients) {
     if (Object.keys(colorSizeSlug).includes(item.color)) {

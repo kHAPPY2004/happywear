@@ -3,16 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 import Product from "@/models/Product";
 import mongoose from "mongoose";
+import { BiSad } from "react-icons/bi";
 
-const Tshirts = ({ products }) => {
+const Hoodies = ({ products }) => {
   // console.log(products)
   return (
     <section className="text-gray-600 body-font overflow-clip">
       <div className="container px-5 py-24 mx-auto">
         <div className="flex flex-wrap -m-6">
         {Object.keys(products).length===0 && <div className="text-lg md:text-2xl lg:text-3xl flex text-center mx-auto justify-center py-8 md:pt-14 px-4 md:h-60 font-bold text-red-500">
-              Soory <ImSad className="mx-2 mt-1 " />All Tshirts are currently out of stock ...
-            </div>} 
+              Soory <ImSad className="mx-2 mt-1 " />All Hoodies are currently out of stock ...
+            </div>}  
           {Object.keys(products).map((item) => {
             return (
               <Link
@@ -57,29 +58,6 @@ const Tshirts = ({ products }) => {
               </Link>
             );
           })}
-          {/* <Link href={"#"} legacyBehavior>
-            <div className="lg:w-1/4 md:w-1/3 w-1/2 p-4 hover:shadow-slate-400 hover:shadow-xl shadow-sm cursor-pointer">
-              <a className="block relative  rounded overflow-hidden  hover:shadow-slate-400 hover:shadow-md">
-                <Image
-                  alt="ecommerce"
-                  className="object-cover object-top h-60 md:h-96 block "
-                  src="https://m.media-amazon.com/images/I/61iWM4s4XCL._UL1500_.jpg"
-                  width={500}
-                  height={500}
-                />
-              </a>
-              <div className="mt-4">
-                <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1">
-                  T-shirts
-                </h3>
-                <h2 className="text-gray-900 title-font text-lg font-medium">
-                  Wear The Code
-                </h2>
-                <p className="mt-1">₹499</p>
-                <p className="mt-1">S, M, L, XL, XXL</p>
-              </div>
-            </div>
-          </Link> */}
         </div>
       </div>
     </section>
@@ -89,32 +67,32 @@ export async function getServerSideProps(context) {
   if (!mongoose.connections[0].readyState) {
     await mongoose.connect(process.env.MONGO_URL);
   }
-  let products = await Product.find({category:'T-Shirt'});
-  let tshirts = {};
+  let products = await Product.find({category:'Hoodies'});
+  let hoodies = {};
   for (let item of products) {
-    if (item.title in tshirts) {
+    if (item.title in hoodies) {
       if (
-        !tshirts[item.title].color.includes(item.color) &&
+        !hoodies[item.title].color.includes(item.color) &&
         item.availableQty > 0
       ) {
-        tshirts[item.title].color.push(item.color);
+        hoodies[item.title].color.push(item.color);
       }
       if (
-        !tshirts[item.title].size.includes(item.size) &&
+        !hoodies[item.title].size.includes(item.size) &&
         item.availableQty > 0
       ) {
-        tshirts[item.title].size.push(item.size);
+        hoodies[item.title].size.push(item.size);
       }
     } else {
-      tshirts[item.title] = JSON.parse(JSON.stringify(item));
+      hoodies[item.title] = JSON.parse(JSON.stringify(item));
       if (item.availableQty > 0) {
-        tshirts[item.title].color = [item.color];
-        tshirts[item.title].size = [item.size];
+        hoodies[item.title].color = [item.color];
+        hoodies[item.title].size = [item.size];
       }
     }
   }
   return {
-    props: { products: JSON.parse(JSON.stringify(tshirts)) }, // will be passed to the page component as props
+    props: { products: JSON.parse(JSON.stringify(hoodies)) }, // will be passed to the page component as props
   };
 }
-export default Tshirts;
+export default Hoodies;
