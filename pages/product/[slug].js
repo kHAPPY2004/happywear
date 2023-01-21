@@ -4,8 +4,10 @@ import Image from "next/image";
 import { useState } from "react";
 import Product from "@/models/Product";
 import mongoose from "mongoose";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const Post = ({ buyNow,addToCart, product, varients }) => {
+const Post = ({ buyNow, addToCart, product, varients }) => {
   // console.log(product);
   // console.log("HApPY");
   // console.log(varients);
@@ -18,8 +20,28 @@ const Post = ({ buyNow,addToCart, product, varients }) => {
     let pinJson = await pins.json();
     if (pinJson.includes(parseInt(pin))) {
       setservice(true);
+      toast.success("Your Pincode is serviceable", {
+        position: "top-right",
+        autoClose: 1200,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     } else {
       setservice(false);
+      toast.warn("Sorry! PinCode not serviceable", {
+        position: "top-right",
+        autoClose: 1200,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
   };
   const onChangePin = (e) => {
@@ -37,6 +59,18 @@ const Post = ({ buyNow,addToCart, product, varients }) => {
   return (
     <>
       <section className="text-gray-600 body-font">
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
         <div className="container px-5 py-24 mx-auto">
           <div className="lg:w-4/5 mx-auto flex flex-wrap">
             {/* <a className="block relative  rounded overflow-hidden  hover:shadow-slate-400 hover:shadow-md"> */}
@@ -261,7 +295,14 @@ const Post = ({ buyNow,addToCart, product, varients }) => {
                 </div>
                 <button
                   onClick={() => {
-                    buyNow(slug, 1,product.price, product.title, product.size, product.color);
+                    buyNow(
+                      slug,
+                      1,
+                      product.price,
+                      product.title,
+                      product.size,
+                      product.color
+                    );
                   }}
                   className="flex-none md:ml-10 lg:ml-10 ml-3 text-sm md:text-lg text-white bg-green-900 border-0 md:px-4 lg:px-6 px-2 md:py-2 lg:py-3 focus:outline-none hover:bg-green-800 rounded"
                 >
@@ -269,7 +310,24 @@ const Post = ({ buyNow,addToCart, product, varients }) => {
                 </button>
                 <button
                   onClick={() => {
-                    addToCart(slug, 1,product.price, product.title, product.size, product.color);
+                    addToCart(
+                      slug,
+                      1,
+                      product.price,
+                      product.title,
+                      product.size,
+                      product.color
+                    );
+                    toast.info("Item is Added ...", {
+                      position: "top-right",
+                      autoClose: 1000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                      theme: "colored",
+                    });
                   }}
                   className="flex-none md:ml-10 lg:ml-10 ml-2 text-sm md:text-lg text-white bg-green-900 border-0 md:px-4 lg:px-6 px-2 md:py-2 lg:py-3 focus:outline-none hover:bg-green-800 rounded"
                 >

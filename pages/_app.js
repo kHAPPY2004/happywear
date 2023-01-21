@@ -4,7 +4,6 @@ import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-
 export default function App({ Component, pageProps }) {
   let [cart, setCart] = useState({});
   const [subTotal, setSubTotal] = useState(0);
@@ -56,7 +55,7 @@ export default function App({ Component, pageProps }) {
   };
   const buyNow = (itemCode, qty, price, name, size, varient) => {
     saveCart({});
-    let newCart = {itemCode:{ qty: 1, price, name, size, varient }};
+    let newCart = { itemCode: { qty: 1, price, name, size, varient } };
     setCart(newCart);
     saveCart(newCart);
     router.push("/checkout");
