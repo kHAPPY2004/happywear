@@ -16,10 +16,10 @@ const Order = ({ subTotal }) => {
               <p className="leading-relaxed mb-4">
                 Your order has been successfully placed.
               </p>
-              <div class="flex justify-between mb-4 border-b-2 border-gray-700">
-                <a class="flex border-gray-300 py-2 text-lg">Description</a>
-                <a class="flex border-gray-300 py-2 text-lg">Quantity</a>
-                <a class="flex border-gray-300 py-2 text-lg">Item Total</a>
+              <div className="flex justify-between mb-4 border-b-2 border-gray-700">
+                <a className="flex border-gray-300 py-2 text-lg">Description</a>
+                <a className="flex border-gray-300 py-2 text-lg">Quantity</a>
+                <a className="flex border-gray-300 py-2 text-lg">Item Total</a>
               </div>
 
               <div className="flex border-t border-gray-200 py-2">

@@ -94,7 +94,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
               id="state"
               required
             >
-              <option selected disabled value="">
+              <option selected disabled value={""}>
                 Choose...
               </option>
               <option>Andhra Pradesh</option>

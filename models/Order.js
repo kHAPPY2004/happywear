@@ -1,5 +1,6 @@
 // getting-started.js
-import mongoose, { connect } from "mongoose";
+// import mongoose, { connect } from "mongoose";
+const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema(
   {
@@ -16,5 +17,6 @@ const OrderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-mongoose.models = {};
-export default mongoose.model("Order", OrderSchema);
+// mongoose.models = {};
+// export default mongoose.model("Order", OrderSchema);
+export default mongoose.models.Order || mongoose.model("Order", OrderSchema);
