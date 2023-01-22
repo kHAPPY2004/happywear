@@ -7,6 +7,8 @@ import { useRouter } from "next/router";
 export default function App({ Component, pageProps }) {
   let [cart, setCart] = useState({});
   const [subTotal, setSubTotal] = useState(0);
+  const [user, setUser] = useState({ value: null });
+  const [key, setKey] = useState(0);
   const router = useRouter();
   useEffect(() => {
     try {
@@ -17,7 +19,18 @@ export default function App({ Component, pageProps }) {
     } catch (error) {
       localStorage.clear();
     }
-  }, []);
+    const token = localStorage.getItem("token");
+    if (token) {
+      setUser({ value: token });
+      setKey(Math.random());
+    }
+  }, [router.query]);
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser({value:null})
+    setKey(Math.random());
+  };
 
   let saveCart = (myCart) => {
     localStorage.setItem("cart", JSON.stringify(myCart));
@@ -63,7 +76,9 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <Navbar
-        key={subTotal}
+        logout={logout}
+        user={user}
+        key={key}
         cart={cart}
         addToCart={addToCart}
         removeFromCart={removeFromCart}
