@@ -1,9 +1,80 @@
 import Link from "next/link";
 import React from "react";
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/router";
 
 const Login = () => {
+  const router = useRouter();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+
+  const handleChange = (e) => {
+    if (e.target.name == "email") {
+      setEmail(e.target.value);
+    } else if (e.target.name == "password") {
+      setPassword(e.target.value);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = { email, password };
+    let res = await fetch("http://localhost:3000/api/login ", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    let response = await res.json();
+    console.log(response);
+    setEmail("");
+    setPassword("");
+    if (response.success) {
+      localStorage.setItem("token", response.token);
+      toast.success(" You are successfully logged in! ", {
+        position: "top-left",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      setTimeout(() => {
+        router.push("http://localhost:3000");
+      }, 1600);
+    } else {
+      toast.error(response.error, {
+        position: "top-left",
+        autoClose: 1500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+
   return (
     <section className="text-gray-600">
+      <ToastContainer
+        position="top-right"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <a
           href="#"
@@ -21,7 +92,11 @@ const Login = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Login to your account
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <form
+              onSubmit={handleSubmit}
+              method="POST"
+              className="space-y-4 md:space-y-6"
+            >
               <div>
                 <label
                   htmlFor="email"
@@ -30,6 +105,8 @@ const Login = () => {
                   Your email
                 </label>
                 <input
+                  value={email}
+                  onChange={handleChange}
                   type="email"
                   name="email"
                   id="email"
@@ -46,6 +123,8 @@ const Login = () => {
                   Password
                 </label>
                 <input
+                  value={password}
+                  onChange={handleChange}
                   type="password"
                   name="password"
                   id="password"
@@ -75,7 +154,7 @@ const Login = () => {
                   </div>
                 </div>
                 <Link
-                  href={'/forgot'}
+                  href={"/forgot"}
                   className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
                   Forgot password?
@@ -90,7 +169,7 @@ const Login = () => {
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don’t have an account yet?{" "}
                 <Link
-                  href={'/signup'}
+                  href={"/signup"}
                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >
                   Sign up
