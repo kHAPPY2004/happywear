@@ -3,14 +3,23 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import LoadingBar from "react-top-loading-bar";
 
 export default function App({ Component, pageProps }) {
   let [cart, setCart] = useState({});
   const [subTotal, setSubTotal] = useState(0);
   const [user, setUser] = useState({ value: null });
   const [key, setKey] = useState(0);
+  const [progress, setProgress] = useState(0);
   const router = useRouter();
+
   useEffect(() => {
+    router.events.on("routeChangeStart", () => {
+      setProgress(40);
+    });
+    router.events.on("routeChangeComplete", () => {
+      setProgress(100);
+    });
     try {
       if (localStorage.getItem("cart")) {
         setCart(JSON.parse(localStorage.getItem("cart")));
@@ -28,8 +37,9 @@ export default function App({ Component, pageProps }) {
 
   const logout = () => {
     localStorage.removeItem("token");
-    setUser({value:null})
+    setUser({ value: null });
     setKey(Math.random());
+    router.push('/')
   };
 
   let saveCart = (myCart) => {
@@ -75,6 +85,12 @@ export default function App({ Component, pageProps }) {
   };
   return (
     <>
+      <LoadingBar
+        color="#ee6b6e"
+        progress={progress}
+        waitingTime={400}
+        onLoaderFinished={() => setProgress(0)}
+      />
       <Navbar
         logout={logout}
         user={user}

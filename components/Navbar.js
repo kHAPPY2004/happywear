@@ -83,7 +83,7 @@ const Navbar = ({
               onMouseLeave={() => {
                 setDropdown(false);
               }}
-              className="absolute right-8 top-7 rounded-md w-56 px-5 py-2 bg-slate-600"
+              className="absolute right-8 top-7 rounded-md shadow-lg border shadow-slate-500 w-56 px-5 py-2 bg-slate-600"
             >
               <ul>
                 <Link href={'/myaccount'}><li className="py-1 hover:text-white text-blue-100 font-bold">My Account</li></Link>

@@ -1,6 +1,13 @@
 import React from "react";
-
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 const Forgot = () => {
+  const router = useRouter();
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      router.push("/");
+    }
+  }, []);
   return (
     <section className="text-gray-600">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
