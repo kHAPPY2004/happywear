@@ -9,7 +9,7 @@ export default function App({ Component, pageProps }) {
   let [cart, setCart] = useState({});
   const [subTotal, setSubTotal] = useState(0);
   const [user, setUser] = useState({ value: null });
-  const [key, setKey] = useState(0);
+  const [key, setKey] = useState(Math.random());
   const [progress, setProgress] = useState(0);
   const router = useRouter();
 
@@ -31,15 +31,15 @@ export default function App({ Component, pageProps }) {
     const token = localStorage.getItem("token");
     if (token) {
       setUser({ value: token });
-      setKey(Math.random());
     }
+    setKey(Math.random());
   }, [router.query]);
 
   const logout = () => {
     localStorage.removeItem("token");
     setUser({ value: null });
     setKey(Math.random());
-    router.push('/')
+    router.push("/");
   };
 
   let saveCart = (myCart) => {
@@ -91,16 +91,18 @@ export default function App({ Component, pageProps }) {
         waitingTime={400}
         onLoaderFinished={() => setProgress(0)}
       />
-      <Navbar
-        logout={logout}
-        user={user}
-        key={key}
-        cart={cart}
-        addToCart={addToCart}
-        removeFromCart={removeFromCart}
-        clearCart={clearCart}
-        subTotal={subTotal}
-      />
+      {key && (
+        <Navbar
+          logout={logout}
+          user={user}
+          key={key}
+          cart={cart}
+          addToCart={addToCart}
+          removeFromCart={removeFromCart}
+          clearCart={clearCart}
+          subTotal={subTotal}
+        />
+      )}
       <Component
         buyNow={buyNow}
         cart={cart}

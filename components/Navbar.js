@@ -16,7 +16,6 @@ import { useRef } from "react";
 const Navbar = ({
   logout,
   user,
-  key,
   cart,
   addToCart,
   removeFromCart,
@@ -67,7 +66,7 @@ const Navbar = ({
         </ul>
       </div>
       <div className="cart absolute right-4 top-4 cursor-pointer flex">
-        <a
+        <span
           onMouseOver={() => {
             setDropdown(true);
           }}
@@ -95,7 +94,7 @@ const Navbar = ({
           {user.value && (
             <MdAccountCircle className=" text-xl md:text-3xl mx-3" />
           )}
-        </a>
+        </span>
         {!user.value && (
           <Link href={"/login"}>
             <button className=" text-sm md:text-lg mx-3">Login</button>

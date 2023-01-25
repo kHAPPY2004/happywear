@@ -11,10 +11,10 @@ const Signup = () => {
       router.push("/");
     }
   }, []);
-  const [name, setName] = useState();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
-  const [confirmpassword, setConfirmPassword] = useState();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmpassword, setConfirmPassword] = useState("");
   const handleChange = (e) => {
     if (e.target.name == "name") {
       setName(e.target.value);
@@ -30,7 +30,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = { name, email, password, confirmpassword };
-    let res = await fetch("http://localhost:3000/api/signup", {
+    let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
