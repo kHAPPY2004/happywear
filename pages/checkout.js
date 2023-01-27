@@ -1,22 +1,36 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaRegSurprise } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { RiShoppingBagFill } from "react-icons/ri";
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 import Head from "next/head";
 import Script from "next/script";
+import { userAgent } from "next/server";
 
-const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
+const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [tel, setTel] = useState("");
   const [pin, setPin] = useState("");
-  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
   const [state, setState] = useState("");
   const [disabled, setDisabled] = useState(true);
+  const [user, setUser] = useState({ value: null });
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("myuser"));
+    if (user.token) {
+      setUser(user);
+      setEmail(user.email);
+    }
+  }, []);
+
   const handleChange = async (e) => {
     console.log("handle");
+    console.log(user, email);
     if (e.target.name == "name") {
       setName(e.target.value);
     } else if (e.target.name == "email") {
@@ -25,26 +39,34 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
       setAddress(e.target.value);
     } else if (e.target.name == "tel") {
       setTel(e.target.value);
-    } else if (e.target.name == "city") {
-      setCity(e.target.value);
-    } else if (e.target.name == "state") {
-      setState(e.target.value);
     } else if (e.target.name == "pin") {
       setPin(e.target.value);
+      if (e.target.value.length == 6) {
+        let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
+        let pinJson = await pins.json();
+        if (Object.keys(pinJson).includes(e.target.value)) {
+          setState(pinJson[e.target.value][1]);
+          setDistrict(pinJson[e.target.value][0]);
+        } else {
+          setState("");
+          setDistrict("");
+        }
+      } else {
+        setState("");
+        setDistrict("");
+      }
     }
 
-    console.log(name, email, address, tel, pin, city, state);
+    console.log(name, email, address, tel, pin);
     if (
       name.length > 3 &&
       email.length > 3 &&
       address.length > 3 &&
       tel.length > 3 &&
-      pin.length > 3 &&
-      city.length > 3 &&
-      state.length > 3
+      pin.length > 3
     ) {
       setDisabled(false);
-      console.log("lund");
+      console.log("lllllll");
     } else {
       setDisabled(true);
       console.log("akhiii");
@@ -65,40 +87,67 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
     });
     console.log("zzzzz", a);
     let txnRes = await a.json();
-    let txnToken = txnRes.txnToken;
-    console.log("oid", oid);
-    console.log("txnToken", txnToken);
-    console.log("txnRes", txnRes);
-    var config = {
-      root: "",
-      flow: "DEFAULT",
-      data: {
-        orderId: oid /* update order id */,
-        token: txnToken /* update token value */,
-        tokenType: "TXN_TOKEN",
-        amount: subTotal /* update amount */,
-      },
-      handler: {
-        notifyMerchant: function (eventName, data) {
-          console.log("notifyMerchant handler function called");
-          console.log("eventName => ", eventName);
-          console.log("data => ", data);
+    if (txnRes.sucess) {
+      let txnToken = txnRes.txnToken;
+      console.log("oid", oid);
+      console.log("txnToken", txnToken);
+      console.log("txnRes", txnRes);
+      var config = {
+        root: "",
+        flow: "DEFAULT",
+        data: {
+          orderId: oid /* update order id */,
+          token: txnToken /* update token value */,
+          tokenType: "TXN_TOKEN",
+          amount: subTotal /* update amount */,
         },
-      },
-    };
+        handler: {
+          notifyMerchant: function (eventName, data) {
+            console.log("notifyMerchant handler function called");
+            console.log("eventName => ", eventName);
+            console.log("data => ", data);
+          },
+        },
+      };
 
-    window.Paytm.CheckoutJS.init(config)
-      .then(function onSuccess() {
-        // after successfully updating configuration, invoke JS Checkout
-        window.Paytm.CheckoutJS.invoke();
-      })
-      .catch(function onError(error) {
-        console.log("error => ", error);
+      window.Paytm.CheckoutJS.init(config)
+        .then(function onSuccess() {
+          // after successfully updating configuration, invoke JS Checkout
+          window.Paytm.CheckoutJS.invoke();
+        })
+        .catch(function onError(error) {
+          console.log("error => ", error);
+        });
+      console.log("asdasd");
+    } else {
+      console.log(txnRes.error);
+      clearCart();
+      toast.error(txnRes.error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
       });
-    console.log("asdasd");
+    }
   };
   return (
     <section className="container m-auto">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       {/* Adding paytm gateway */}
       <Head>
         <meta
@@ -136,14 +185,25 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
             <label htmlFor="email" className="leading-7 text-sm text-gray-600">
               Email
             </label>
-            <input
-              onChange={handleChange}
-              value={email}
-              type="email"
-              id="email"
-              name="email"
-              className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-            />
+            {user && user.value ? (
+              <input
+                readOnly
+                value={user.email}
+                type="email"
+                id="email"
+                name="email"
+                className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              />
+            ) : (
+              <input
+                onChange={handleChange}
+                value={email}
+                type="email"
+                id="email"
+                name="email"
+                className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              />
+            )}
           </div>
         </div>
       </div>
@@ -184,15 +244,15 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
         </div>
         <div className="px-2 w-1/2">
           <div className="mb-4">
-            <label htmlFor="city" className="leading-7 text-sm text-gray-600">
-              City
+            <label htmlFor="district" className="leading-7 text-sm text-gray-600">
+              District
             </label>
             <input
               onChange={handleChange}
-              value={city}
+              value={district}
               type="text"
-              id="city"
-              name="city"
+              id="district"
+              name="district"
               className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
           </div>
@@ -204,7 +264,15 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
             <label htmlFor="state" className="leading-7 text-sm text-gray-600">
               State
             </label>
-            <select
+            <input
+              onChange={handleChange}
+              value={state}
+              type="text"
+              id="state"
+              name="state"
+              className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+            />
+            {/* <select
               onChange={handleChange}
               value={state}
               name="state"
@@ -243,7 +311,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
               <option>Uttar Pradesh</option>
               <option>Uttarakhand</option>
               <option>West Bengal</option>
-            </select>
+            </select> */}
           </div>
         </div>
         <div className="px-2 w-1/2">
@@ -254,7 +322,7 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
             <input
               onChange={handleChange}
               value={pin}
-              type="tel"
+              type="pin"
               minLength="6"
               maxLength="6"
               pattern=" [1-9]"
@@ -319,9 +387,8 @@ const Checkout = ({ cart, addToCart, removeFromCart, subTotal }) => {
       </div>
       <button
         disabled={disabled}
-        // onChange={handleChange}
         onClick={initiatePayment}
-        className="flex text-white bg-green-700 border-0 py-2 pl-3 pr-4 my-5 focus:outline-none hover:bg-green-800 rounded"
+        className="flex text-white disabled:bg-green-400 bg-green-700 border-0 py-2 pl-3 pr-4 my-5 focus:outline-none hover:bg-green-800 rounded"
       >
         <RiShoppingBagFill className="mx-1 text-lg" />
         <div>Pay ₹{subTotal}</div>

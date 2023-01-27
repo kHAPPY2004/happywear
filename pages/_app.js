@@ -28,15 +28,15 @@ export default function App({ Component, pageProps }) {
     } catch (error) {
       localStorage.clear();
     }
-    const token = localStorage.getItem("token");
-    if (token) {
-      setUser({ value: token });
+    const myuser = JSON.parse(localStorage.getItem("myuser"));
+    if (myuser) {
+      setUser({ value: myuser.token, email: myuser.email });
     }
     setKey(Math.random());
   }, [router.query]);
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("myuser");
     setUser({ value: null });
     setKey(Math.random());
     router.push("/");
@@ -77,8 +77,8 @@ export default function App({ Component, pageProps }) {
     saveCart(newCart);
   };
   const buyNow = (itemCode, qty, price, name, size, varient) => {
-    saveCart({});
-    let newCart = { itemCode: { qty: 1, price, name, size, varient } };
+    let newCart = {};
+    newCart[itemCode] = { qty: 1, price, name, size, varient };
     setCart(newCart);
     saveCart(newCart);
     router.push("/checkout");

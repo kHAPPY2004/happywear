@@ -1,10 +1,71 @@
 const https = require("https");
 const PaytmChecksum = require("paytmchecksum");
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 import connectDb from "@/middleware/mongoose";
 const handler = async (req, res) => {
-  console.log("cccccc");
   if (req.method == "POST") {
+    // Check if the cart is tempered with
+    let product,
+      sumTotal = 0;
+    let cart = req.body.cart;
+    if (req.body.subTotal < 1) {
+      res.status(200).json({
+        sucess: false,
+        error: "Please build your cart and try again..",
+      });
+      return;
+    }
+    for (let item in cart) {
+      console.log(item);
+      sumTotal += cart[item].price * cart[item].qty;
+      product = await Product.findOne({ slug: item });
+
+      // check cart if the cart items are out of stoke...
+      if (product.availableQty < cart[item].qty) {
+        res.status(200).json({
+          sucess: false,
+          error:
+            "Some items in your cart went out of stoke...Please try again..",
+        });
+        return;
+      }
+      if (product.price != cart[item].price) {
+        res.status(200).json({
+          sucess: false,
+          error:
+            "ERROR ! Some items in your cart have been changed. Please try again....",
+        });
+        return;
+      }
+    }
+    if (sumTotal !== req.body.subTotal) {
+      res.status(200).json({
+        sucess: false,
+        error:
+          "ERROR ! Some items in your cart have been changed. Please try again....",
+      });
+      return;
+    }
+    console.log("cccccc");
+
+    // Check if the details are pending....
+    if (req.body.tel.length !== 10 || !Number.isInteger(req.body.tel)) {
+      res.status(200).json({
+        sucess: false,
+        error: "Please enter your 10 digit phone number...",
+      });
+      return;
+    }
+    if (req.body.pin.length !== 6 || !Number.isInteger(req.body.pin)) {
+      res.status(200).json({
+        sucess: false,
+        error: "Please enter your 6 digit pincode...",
+      });
+      return;
+    }
+
+    //Initiate an order corressponding to this order id...
     let order = new Order({
       email: req.body.email,
       orderId: req.body.oid,
@@ -72,7 +133,9 @@ const handler = async (req, res) => {
 
           post_res.on("end", function () {
             console.log("Response: ", response);
-            resolve(JSON.parse(response).body);
+            let ress = JSON.parse(response).body;
+            ress.sucess = true;
+            resolve(ress);
           });
         });
 

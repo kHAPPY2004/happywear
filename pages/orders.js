@@ -1,16 +1,33 @@
 import React from "react";
-import Order from "@/models/Order";
-import mongoose from "mongoose";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import Link from "next/link";
 
 const Orders = () => {
+  const [orders, setOrders] = useState([]);
   const router = useRouter();
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
+    const fetchOrders = async () => {
+      let a = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/myorders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: JSON.parse(localStorage.getItem("myuser")).token,
+        }),
+      });
+      let res = await a.json();
+      setOrders(res.orders);
+    };
+    if (!localStorage.getItem("myuser")) {
       router.push("/");
+    } else {
+      fetchOrders();
     }
   }, []);
+  console.log("orders:-", orders);
   return (
     <section className="container mx-auto h-screen my-10">
       <h1 className="font-bold text-slate-800 text-center my-5 text-2xl">
@@ -28,71 +45,50 @@ const Orders = () => {
                       scope="col"
                       className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
                     >
-                      #
+                      #OrderId
                     </th>
                     <th
                       scope="col"
                       className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
                     >
-                      First
+                      Email
                     </th>
                     <th
                       scope="col"
                       className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
                     >
-                      Last
+                      Amount
                     </th>
                     <th
                       scope="col"
                       className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
                     >
-                      Handle
+                      Details{" "}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      1
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      Mark
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      Otto
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      @mdo
-                    </td>
-                  </tr>
-                  <tr className="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      2
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      Jacob
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      Thornton
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      @fat
-                    </td>
-                  </tr>
-                  <tr className="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      3
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      Larry
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      Wild
-                    </td>
-                    <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                      @twitter
-                    </td>
-                  </tr>
+                  {orders.map((item) => {
+                    return (
+                      <tr
+                        key={item._id}
+                        className="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {item.orderId}
+                        </td>
+                        <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                          {item.email}
+                        </td>
+                        <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                        ₹{item.amount}
+                        </td>
+                        <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                          <Link href={"/order?id=" + item._id}>Details</Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -102,16 +98,4 @@ const Orders = () => {
     </section>
   );
 };
-export async function getServerSideProps(context) {
-  if (!mongoose.connections[0].readyState) {
-    await mongoose.connect(process.env.MONGO_URL);
-  }
-  let orders = await Order.find({});
-
-  return {
-    props: {
-      orders: orders,
-    }, // will be passed to the page component as props
-  };
-}
 export default Orders;

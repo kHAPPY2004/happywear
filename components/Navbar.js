@@ -85,9 +85,22 @@ const Navbar = ({
               className="absolute right-8 top-7 rounded-md shadow-lg border shadow-slate-500 w-56 px-5 py-2 bg-slate-600"
             >
               <ul>
-                <Link href={'/myaccount'}><li className="py-1 hover:text-white text-blue-100 font-bold">My Account</li></Link>
-                <Link href={'/orders'}><li className="py-1 hover:text-white text-blue-100 font-bold">Orders</li></Link>
-                <li onClick={logout} className="py-1 hover:text-white text-blue-100 font-bold">Logout</li>
+                <Link href={"/myaccount"}>
+                  <li className="py-1 hover:text-white text-blue-100 font-bold">
+                    My Account
+                  </li>
+                </Link>
+                <Link href={"/orders"}>
+                  <li className="py-1 hover:text-white text-blue-100 font-bold">
+                    Orders
+                  </li>
+                </Link>
+                <li
+                  onClick={logout}
+                  className="py-1 hover:text-white text-blue-100 font-bold"
+                >
+                  Logout
+                </li>
               </ul>
             </div>
           )}
@@ -172,14 +185,18 @@ const Navbar = ({
         <div className="subTotal">Subtotal : ₹{subTotal}</div>
         <div className="flex space-x-5">
           <Link href={"/checkout"}>
-            <button className="flex text-white bg-green-900 border-0 py-2 pl-3 pr-4 my-5 focus:outline-none hover:bg-green-800 rounded">
+            <button
+              disabled={Object.keys(cart).length === 0}
+              className="disabled:bg-gray-400 flex text-white bg-green-900 border-0 py-2 pl-3 pr-4 my-5 focus:outline-none hover:bg-green-800 rounded"
+            >
               <BsCartCheckFill className="mx-1 text-lg" />
               checkout
             </button>
           </Link>
           <button
+            disabled={Object.keys(cart).length === 0}
             onClick={clearCart}
-            className="flex text-white bg-green-900 border-0 py-2 px-4 my-5 focus:outline-none hover:bg-green-800  rounded"
+            className="disabled:bg-gray-400 flex text-white bg-green-900 border-0 py-2 px-4 my-5 focus:outline-none hover:bg-green-800  rounded"
           >
             clear cart
           </button>
