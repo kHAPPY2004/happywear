@@ -7,7 +7,6 @@ import { RiShoppingBagFill } from "react-icons/ri";
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 import Head from "next/head";
 import Script from "next/script";
-import { userAgent } from "next/server";
 
 const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
   const [name, setName] = useState("");
@@ -22,7 +21,7 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("myuser"));
-    if (user.token) {
+    if (user && user.token) {
       setUser(user);
       setEmail(user.email);
     }
@@ -73,13 +72,37 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
       }
     }
 
-    console.log(name, email, address, tel, pin);
+    console.log(
+      name,
+      typeof name,
+      email,
+      address,
+      tel,
+      typeof tel,
+      pin,
+      typeof tel,
+      district,
+      typeof district,
+      state,
+      typeof state
+    );
   };
   const initiatePayment = async () => {
     console.log("yyyyy");
     let oid = Math.floor(Math.random() * Date.now());
     // Get a transaction token
-    const data = { cart, subTotal, oid, email: email, name, address, tel, pin };
+    const data = {
+      cart,
+      subTotal,
+      oid,
+      email: email,
+      name,
+      address,
+      tel,
+      pin,
+      district,
+      state,
+    };
     console.log("llllll");
     let a = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pretransaction`, {
       method: "POST",
@@ -124,7 +147,9 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
       console.log("asdasd");
     } else {
       console.log(txnRes.error);
-      clearCart();
+      if (txnRes.cartClear) {
+        clearCart();
+      }
       toast.error(txnRes.error, {
         position: "top-right",
         autoClose: 5000,
@@ -188,7 +213,7 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
             <label htmlFor="email" className="leading-7 text-sm text-gray-600">
               Email
             </label>
-            {user && user.value ? (
+            {user && user.token ? (
               <input
                 readOnly
                 value={user.email}

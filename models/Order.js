@@ -4,16 +4,17 @@ const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema(
   {
-    // name: { type: String, required: true },
+    name: { type: String, required: true },
     email: { type: String, required: true },
     address: { type: String, required: true },
+    transactionid: { type: String, default: "" },
     orderId: { type: String, required: true },
     paymentInfo: { type: String, default: "" },
-    products: {type:Object,required:true},
-    // tel: {type:Object,required:true},
-    // pin: {type:Object,required:true},
-    // city: {type:Object,required:true},
-    // state: {type:Object,required:true},
+    products: { type: Object, required: true },
+    tel: { type: String, required: true },
+    pin: { type: String, required: true },
+    district: { type: String, required: true },
+    state: { type: String, required: true },
     amount: { type: Number, required: true },
     Status: { type: String, default: "Initiated", required: true },
     deliveryStatus: { type: String, default: "unshipped", required: true },

@@ -3,8 +3,19 @@ const PaytmChecksum = require("paytmchecksum");
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import connectDb from "@/middleware/mongoose";
+import pincodes from "../../pincodes.json";
 const handler = async (req, res) => {
   if (req.method == "POST") {
+    // Check if the pincode is serviceable
+    if (!Object.keys(pincodes).includes(req.body.pin)) {
+      res.status(200).json({
+        sucess: false,
+        error: "Your pincode is not serviceable ..",
+        cartClear: false,
+      });
+      return;
+    }
+
     // Check if the cart is tempered with
     let product,
       sumTotal = 0;
@@ -27,6 +38,7 @@ const handler = async (req, res) => {
           sucess: false,
           error:
             "Some items in your cart went out of stoke...Please try again..",
+          cartClear: true,
         });
         return;
       }
@@ -35,6 +47,7 @@ const handler = async (req, res) => {
           sucess: false,
           error:
             "ERROR ! Some items in your cart have been changed. Please try again....",
+          cartClear: true,
         });
         return;
       }
@@ -44,6 +57,7 @@ const handler = async (req, res) => {
         sucess: false,
         error:
           "ERROR ! Some items in your cart have been changed. Please try again....",
+        cartClear: true,
       });
       return;
     }
@@ -54,6 +68,7 @@ const handler = async (req, res) => {
       res.status(200).json({
         sucess: false,
         error: "Please enter your 10 digit phone number...",
+        cartClear: false,
       });
       return;
     }
@@ -61,13 +76,19 @@ const handler = async (req, res) => {
       res.status(200).json({
         sucess: false,
         error: "Please enter your 6 digit pincode...",
+        cartClear: false,
       });
       return;
     }
 
     //Initiate an order corressponding to this order id...
     let order = new Order({
+      name: req.body.name,
       email: req.body.email,
+      tel: req.body.tel,
+      pin: req.body.pin,
+      district: req.body.district,
+      state: req.body.state,
       orderId: req.body.oid,
       address: req.body.address,
       amount: req.body.subTotal,
@@ -135,6 +156,8 @@ const handler = async (req, res) => {
             console.log("Response: ", response);
             let ress = JSON.parse(response).body;
             ress.sucess = true;
+            ress.cartClear = false;
+
             resolve(ress);
           });
         });

@@ -64,7 +64,8 @@ const MyOrder = ({ order, clearCart }) => {
                       {order.products[key].qty}
                     </span>
                     <span className="mx-auto w-1/5  text-center justify-center text-gray-900">
-                      ₹{order.products[key].price}
+                      ₹{order.products[key].price} X {order.products[key].qty} =
+                      ₹{order.products[key].price * order.products[key].qty}
                     </span>
                   </div>
                 );

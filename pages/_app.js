@@ -52,6 +52,9 @@ export default function App({ Component, pageProps }) {
     setSubTotal(subt);
   };
   const addToCart = (itemCode, qty, price, name, size, varient) => {
+    if (Object.keys(cart).length == 0) {
+      setKey(Math.random());
+    }
     let newCart = cart;
     if (itemCode in cart) {
       newCart[itemCode].qty = cart[itemCode].qty + qty;
