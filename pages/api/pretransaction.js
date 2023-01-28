@@ -50,14 +50,14 @@ const handler = async (req, res) => {
     console.log("cccccc");
 
     // Check if the details are pending....
-    if (req.body.tel.length !== 10 || !Number.isInteger(req.body.tel)) {
+    if (req.body.tel.length !== 10 || !Number.isInteger(Number(req.body.tel))) {
       res.status(200).json({
         sucess: false,
         error: "Please enter your 10 digit phone number...",
       });
       return;
     }
-    if (req.body.pin.length !== 6 || !Number.isInteger(req.body.pin)) {
+    if (req.body.pin.length !== 6 || !Number.isInteger(Number(req.body.pin))) {
       res.status(200).json({
         sucess: false,
         error: "Please enter your 6 digit pincode...",

@@ -28,6 +28,22 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (
+      name.length > 3 &&
+      email.length > 3 &&
+      address.length > 3 &&
+      tel.length > 3 &&
+      pin.length > 3
+    ) {
+      setDisabled(false);
+      console.log("lllllll");
+    } else {
+      setDisabled(true);
+      console.log("akhiii");
+    }
+  }, [name, email, address, tel, pin]);
+
   const handleChange = async (e) => {
     console.log("handle");
     console.log(user, email);
@@ -58,19 +74,6 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
     }
 
     console.log(name, email, address, tel, pin);
-    if (
-      name.length > 3 &&
-      email.length > 3 &&
-      address.length > 3 &&
-      tel.length > 3 &&
-      pin.length > 3
-    ) {
-      setDisabled(false);
-      console.log("lllllll");
-    } else {
-      setDisabled(true);
-      console.log("akhiii");
-    }
   };
   const initiatePayment = async () => {
     console.log("yyyyy");
@@ -244,7 +247,10 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
         </div>
         <div className="px-2 w-1/2">
           <div className="mb-4">
-            <label htmlFor="district" className="leading-7 text-sm text-gray-600">
+            <label
+              htmlFor="district"
+              className="leading-7 text-sm text-gray-600"
+            >
               District
             </label>
             <input

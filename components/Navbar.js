@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -12,6 +13,7 @@ import {
   AiOutlineMinusCircle,
 } from "react-icons/ai";
 import { useRef } from "react";
+import { useRouter } from "next/router";
 
 const Navbar = ({
   logout,
@@ -23,17 +25,28 @@ const Navbar = ({
   subTotal,
 }) => {
   const [dropdown, setDropdown] = useState(false);
+  const [sidebar, setSidebar] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    Object.keys(cart).length !== 0 && setSidebar(true);
+    let cool = ["/checkout", "/", "/orders", "/order", "/myaccount"];
+    if (cool.includes(router.pathname)) {
+      setSidebar(false);
+    }
+  }, []);
+
   // const toggleDropdown = () => {
   //   setDropdown(!dropdown);
   // };
   const toggleCart = () => {
-    if (ref.current.classList.contains("translate-x-full")) {
-      ref.current.classList.remove("translate-x-full");
-      ref.current.classList.add("translate-x-0");
-    } else if (!ref.current.classList.contains("translate-x-full")) {
-      ref.current.classList.remove("translate-x-0");
-      ref.current.classList.add("translate-x-full");
-    }
+    setSidebar(!sidebar);
+    // if (ref.current.classList.contains("translate-x-full")) {
+    //   ref.current.classList.remove("translate-x-full");
+    //   ref.current.classList.add("translate-x-0");
+    // } else if (!ref.current.classList.contains("translate-x-full")) {
+    //   ref.current.classList.remove("translate-x-0");
+    //   ref.current.classList.add("translate-x-full");
+    // }
   };
   const ref = useRef();
   return (
@@ -92,7 +105,7 @@ const Navbar = ({
                 </Link>
                 <Link href={"/orders"}>
                   <li className="py-1 hover:text-white text-blue-100 font-bold">
-                    Orders
+                    My Orders
                   </li>
                 </Link>
                 <li
@@ -122,8 +135,8 @@ const Navbar = ({
       {/* Cart is start */}
       <div
         ref={ref}
-        className={`sideCart px-2 absolute top-0 right-0 bg-slate-400 w-full h-fit md:w-3/5 lg:w-2/5 transform transition-transform ${
-          Object.keys(cart).length !== 0 ? "translate-x-0" : "translate-x-full"
+        className={`sideCart px-2 absolute top-0 bg-slate-400 w-full h-fit md:w-3/5 lg:w-2/5 transform transition-all ${
+          sidebar ? "right-0" : "-right-full"
         }`}
       >
         <h2 className="text-2xl font-bold my-5 mx-2">Shopping Cart</h2>

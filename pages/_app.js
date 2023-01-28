@@ -15,7 +15,7 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => {
     router.events.on("routeChangeStart", () => {
-      setProgress(40);
+      setProgress(30);
     });
     router.events.on("routeChangeComplete", () => {
       setProgress(100);
@@ -86,7 +86,7 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <LoadingBar
-        color="#ee6b6e"
+        color="#FF0000"
         progress={progress}
         waitingTime={400}
         onLoaderFinished={() => setProgress(0)}

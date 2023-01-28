@@ -1,13 +1,14 @@
 import { useRouter } from "next/router";
 import { BsFillBagCheckFill } from "react-icons/bs";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Product from "@/models/Product";
 import mongoose from "mongoose";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Error from "next/error";
 
-const Post = ({ buyNow, addToCart, product, varients }) => {
+const Post = ({ buyNow, addToCart, product, varients, error }) => {
   // console.log(product);
   // console.log("HApPY");
   // console.log(varients);
@@ -15,6 +16,17 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
   const { slug } = router.query;
   const [pin, setpin] = useState();
   const [service, setservice] = useState();
+
+  const [color, setColor] = useState();
+  const [size, setSize] = useState();
+  useEffect(() => {
+    if (!error) {
+      console.log(product.availableQty);
+      setColor(product.color);
+      setSize(product.size);
+    }
+  }, [router.query]);
+
   const checkpincode = async () => {
     let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
     let pinJson = await pins.json();
@@ -48,14 +60,14 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
     setpin(e.target.value);
   };
 
-  const [color, setColor] = useState(product.color);
-  const [size, setSize] = useState(product.size);
-
   const refreshVarients = (newSize, newColor) => {
     let url = `${process.env.NEXT_PUBLIC_HOST}/product/${varients[newColor][newSize]["slug"]}`;
-    window.location = url;
+    // window.location = url;To reload the page
+    router.push(url);
   };
-
+  if (error == 404) {
+    return <Error statusCode={404} />;
+  }
   return (
     <>
       <section className="text-gray-600 body-font">
@@ -187,6 +199,12 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
                 </span>
               </div>
               <p className="leading-relaxed">{product.desc}</p>
+
+              {product.availableQty < 5 && (
+                <div className="title-font font-medium text-2xl pt-2 text-red-600">
+                  Hurry up only {product.availableQty} items
+                </div>
+              )}
               <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
                 <div className="flex">
                   <span className="mr-3">Color</span>
@@ -256,21 +274,22 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
                       }}
                       className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-green-200 focus:border-green-500 text-base pl-3 pr-10"
                     >
-                      {Object.keys(varients[color]).includes("S") && (
+                      {color && Object.keys(varients[color]).includes("S") && (
                         <option value={"S"}>S</option>
                       )}
-                      {Object.keys(varients[color]).includes("M") && (
+                      {color && Object.keys(varients[color]).includes("M") && (
                         <option value={"M"}>M</option>
                       )}
-                      {Object.keys(varients[color]).includes("L") && (
+                      {color && Object.keys(varients[color]).includes("L") && (
                         <option value={"L"}>L</option>
                       )}
-                      {Object.keys(varients[color]).includes("XL") && (
+                      {color && Object.keys(varients[color]).includes("XL") && (
                         <option value={"XL"}>XL</option>
                       )}
-                      {Object.keys(varients[color]).includes("XXL") && (
-                        <option value={"XXL"}>XXL</option>
-                      )}
+                      {color &&
+                        Object.keys(varients[color]).includes("XXL") && (
+                          <option value={"XXL"}>XXL</option>
+                        )}
                     </select>
                     <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                       <svg
@@ -289,10 +308,18 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
                 </div>
               </div>
               <div className="flex">
-                <div className="title-font font-medium text-2xl pt-1 text-gray-900">
-                  $58.00
-                </div>
+                {product.availableQty > 0 && (
+                  <div className="title-font font-medium text-2xl pt-2 text-gray-900">
+                    ₹{product.price}
+                  </div>
+                )}
+                {product.availableQty < 1 && (
+                  <div className="title-font font-medium text-red-600 text-sm md:text-lg lg:text-xl pt-2">
+                    Out of stock
+                  </div>
+                )}
                 <button
+                  disabled={product.availableQty < 1}
                   onClick={() => {
                     buyNow(
                       slug,
@@ -303,11 +330,12 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
                       product.color
                     );
                   }}
-                  className="flex-none md:ml-10 lg:ml-10 ml-3 text-sm md:text-lg text-white bg-green-900 border-0 md:px-4 lg:px-6 px-2 md:py-2 lg:py-3 focus:outline-none hover:bg-green-800 rounded"
+                  className="disabled:bg-slate-400 flex-none md:ml-10 lg:ml-10 ml-3 text-sm md:text-lg text-white bg-green-900 border-0 md:px-4 lg:px-6 px-2 md:py-2 lg:py-3 focus:outline-none hover:bg-green-800 rounded"
                 >
                   Buy Now
                 </button>
                 <button
+                  disabled={product.availableQty < 1}
                   onClick={() => {
                     addToCart(
                       slug,
@@ -328,7 +356,7 @@ const Post = ({ buyNow, addToCart, product, varients }) => {
                       theme: "colored",
                     });
                   }}
-                  className="flex-none md:ml-10 lg:ml-10 ml-2 text-sm md:text-lg text-white bg-green-900 border-0 md:px-4 lg:px-6 px-2 md:py-2 lg:py-3 focus:outline-none hover:bg-green-800 rounded"
+                  className="disabled:bg-slate-400 flex-none md:ml-10 lg:ml-10 ml-2 text-sm md:text-lg text-white bg-green-900 border-0 md:px-4 lg:px-6 px-2 md:py-2 lg:py-3 focus:outline-none hover:bg-green-800 rounded"
                 >
                   Add to cart
                 </button>
@@ -384,8 +412,19 @@ export async function getServerSideProps(context) {
   if (!mongoose.connections[0].readyState) {
     await mongoose.connect(process.env.MONGO_URL);
   }
+  let error = null;
   let product = await Product.findOne({ slug: context.query.slug });
-  let varients = await Product.find({ title: product.title,category:product.category });
+  if (product == null) {
+    return {
+      props: {
+        error: 404,
+      }, // will be passed to the page component as props
+    };
+  }
+  let varients = await Product.find({
+    title: product.title,
+    category: product.category,
+  });
   let colorSizeSlug = {};
   for (let item of varients) {
     if (Object.keys(colorSizeSlug).includes(item.color)) {
@@ -398,6 +437,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
+      error: error,
       product: JSON.parse(JSON.stringify(product)),
       varients: JSON.parse(JSON.stringify(colorSizeSlug)),
     }, // will be passed to the page component as props

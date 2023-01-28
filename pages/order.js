@@ -1,11 +1,16 @@
 import { useRouter } from "next/router";
 import React from "react";
+import { useState } from "react";
 import Order from "@/models/Order";
 import mongoose from "mongoose";
 import { useEffect } from "react";
+
 const MyOrder = ({ order, clearCart }) => {
   const router = useRouter();
+  const [date, setDate] = useState();
   useEffect(() => {
+    const d = new Date(order.createdAt);
+    setDate(d);
     if (router.query.clearCart == 1) {
       clearCart();
     }
@@ -25,9 +30,14 @@ const MyOrder = ({ order, clearCart }) => {
               <h1 className="text-gray-900 text-3xl title-font font-medium mb-4">
                 Order Id : #{order.orderId}
               </h1>
-              <p className="leading-relaxed mb-4">
-                Your order has been successfully placed.Your payment status is :
-                {order.Status}
+              <p className="leading-relaxed ">
+                Your order has been successfully placed.
+              </p>
+              <p className="leading-relaxed ">
+                Order placed on : {date && date.toLocaleString()}
+              </p>
+              <p className=" leading-relaxed mb-4">
+                Your payment status is : {order.Status}
               </p>
               <div className="flex text-center justify-center w-full border-b-2 py-2 border-gray-700 font-bold">
                 <a className="flex border-gray-300 w-3/5 text-lg">
