@@ -20,13 +20,25 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
   const [user, setUser] = useState({ value: null });
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("myuser"));
-    if (user && user.token) {
-      setUser(user);
-      setEmail(user.email);
+    const myuser = JSON.parse(localStorage.getItem("myuser"));
+    if (myuser && myuser.token) {
+      setUser(myuser);
+      setEmail(myuser.email);
+      fetchData(myuser.token);
     }
   }, []);
 
+  const getPincode = async (pin) => {
+    let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
+    let pinJson = await pins.json();
+    if (Object.keys(pinJson).includes(pin)) {
+      setState(pinJson[pin][1]);
+      setDistrict(pinJson[pin][0]);
+    } else {
+      setState("");
+      setDistrict("");
+    }
+  };
   useEffect(() => {
     if (
       name.length > 3 &&
@@ -43,6 +55,25 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
     }
   }, [name, email, address, tel, pin]);
 
+  const fetchData = async (token) => {
+    let data = { token: token };
+    let a = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/getuser`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    console.log("zzzzz", a);
+    let res = await a.json();
+    console.log("res:-", res);
+    setName(res.name);
+    setAddress(res.address);
+    setPin(res.pin);
+    setTel(res.tel);
+    getPincode(res.pin);
+  };
+
   const handleChange = async (e) => {
     console.log("handle");
     console.log(user, email);
@@ -57,15 +88,7 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
     } else if (e.target.name == "pin") {
       setPin(e.target.value);
       if (e.target.value.length == 6) {
-        let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
-        let pinJson = await pins.json();
-        if (Object.keys(pinJson).includes(e.target.value)) {
-          setState(pinJson[e.target.value][1]);
-          setDistrict(pinJson[e.target.value][0]);
-        } else {
-          setState("");
-          setDistrict("");
-        }
+        getPincode(e.target.value);
       } else {
         setState("");
         setDistrict("");
@@ -188,7 +211,7 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
         src={`${process.env.NEXT_PUBLIC_PAYTM_HOST}/merchantpgpui/checkoutjs/merchants/${process.env.NEXT_PUBLIC_PAYTM_MID}.js`}
         crossorigin="anonymous"
       />
-      <h1 className="flex justify-center items-center font-bold text-xl">
+      <h1 className="flex justify-center items-center font-bold text-xl my-5 md:mt-10">
         Checkout
       </h1>
       <h2 className="font-bold text-xl">1. Delivery Details </h2>
