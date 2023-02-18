@@ -70,7 +70,7 @@ const Post = ({ buyNow, addToCart, product, varients, error }) => {
   }
   return (
     <>
-      <section className="text-gray-600 body-font">
+      <section className="text-gray-600 body-font min-h-screen">
         <ToastContainer
           position="top-right"
           autoClose={3000}

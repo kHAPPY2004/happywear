@@ -33,6 +33,7 @@ export default function App({ Component, pageProps }) {
       setUser({ value: myuser.token, email: myuser.email });
     }
     setKey(Math.random());
+    console.log("lflf: ", router.query);
   }, [router.query]);
 
   const logout = () => {

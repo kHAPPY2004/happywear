@@ -29,7 +29,7 @@ const Navbar = ({
   const router = useRouter();
   useEffect(() => {
     Object.keys(cart).length !== 0 && setSidebar(true);
-    let cool = ["/checkout", "/", "/orders", "/order", "/myaccount"];
+    let cool = ["/checkout", "/", "/orders", "/order", "/myaccount","/forgot","/login","/signup"];
     if (cool.includes(router.pathname)) {
       setSidebar(false);
     }

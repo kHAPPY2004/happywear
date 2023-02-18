@@ -12,7 +12,7 @@ const Stickers = ({ products }) => {
       <div className="container px-5 py-24 mx-auto">
         <div className="flex flex-wrap -m-6">
            {Object.keys(products).length===0 && <div className="text-lg md:text-2xl lg:text-3xl flex text-center mx-auto justify-center py-8 md:pt-14 px-4 md:h-60 font-bold text-red-500">
-              Soory <ImSad className="mx-2 mt-1 " />All Stickers are currently out of stock ...
+              Sorry <ImSad className="mx-2 mt-1 " />All Stickers are currently out of stock ...
             </div>} 
           {Object.keys(products).map((item) => {
             return (

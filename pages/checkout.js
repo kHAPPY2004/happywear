@@ -186,7 +186,7 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
     }
   };
   return (
-    <section className="container m-auto">
+    <section className="container m-auto min-h-screen">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -201,6 +201,7 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
       />
       {/* Adding paytm gateway */}
       <Head>
+        <title>Checkout - Codeswear.com</title>
         <meta
           name="viewport"
           content="width=device-width, height=device-height, initial-sc ale=1.0, maximum-scale=1.0"
@@ -326,46 +327,6 @@ const Checkout = ({ cart, clearCart, addToCart, removeFromCart, subTotal }) => {
               name="state"
               className="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
-            {/* <select
-              onChange={handleChange}
-              value={state}
-              name="state"
-              className="w-full h-10 bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-              id="state"
-              required
-            >
-              <option selected disabled value={""}>
-                Choose...
-              </option>
-              <option>Andhra Pradesh</option>
-              <option>Arunachal Pradesh</option>
-              <option>Assam</option>
-              <option>Bihar</option>
-              <option>Chhattisgarh</option>
-              <option>Goa</option>
-              <option>Gujarat</option>
-              <option>Haryana</option>
-              <option>Himachal Pradesh</option>
-              <option>Jharkhand</option>
-              <option>Karnataka</option>
-              <option>Kerala</option>
-              <option>Madhya Pradesh</option>
-              <option>Maharashtra</option>
-              <option>Manipur</option>
-              <option>Meghalaya</option>
-              <option>Mizoram</option>
-              <option>Nagaland</option>
-              <option>Odisha</option>
-              <option>Punjab</option>
-              <option>Rajasthan</option>
-              <option>Sikkim</option>
-              <option>Tamil Nadu</option>
-              <option>Telangana</option>
-              <option>Tripura</option>
-              <option>Uttar Pradesh</option>
-              <option>Uttarakhand</option>
-              <option>West Bengal</option>
-            </select> */}
           </div>
         </div>
         <div className="px-2 w-1/2">
